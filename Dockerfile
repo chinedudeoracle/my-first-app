@@ -12,20 +12,18 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY . .
 
-RUN composer clear-cache
+ENV COMPOSER_MEMORY_LIMIT=-1
 
-RUN composer diagnose || true
+RUN php -v
+RUN composer -V
+RUN php -m
 
-RUN composer install --no-dev --no-interaction --prefer-dist -vvv
+RUN composer install --no-dev --no-interaction --prefer-dist
 
 RUN cp .env.example .env
 
 RUN php artisan key:generate
 
-RUN php artisan config:cache
-
 RUN npm install && npm run build
-
-RUN php artisan key:generate
 
 CMD php artisan serve --host=0.0.0.0 --port=10000
