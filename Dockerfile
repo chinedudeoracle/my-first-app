@@ -10,10 +10,12 @@ RUN apt-get update && apt-get install -y \
     libzip-dev libonig-dev libxml2-dev \
     libcurl4-openssl-dev libssl-dev \
     libpng-dev libjpeg-dev libfreetype6-dev libicu-dev \
-    nodejs npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql mbstring bcmath xml zip gd intl \
     && rm -rf /var/lib/apt/lists/*
+	
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
 
 # =========================
 # Composer
@@ -55,7 +57,7 @@ RUN php artisan key:generate --force || true
 # =========================
 # Frontend build (Vite / Inertia)
 # =========================
-RUN npm ci || npm install
+RUN npm install
 RUN npm run build
 
 # =========================
