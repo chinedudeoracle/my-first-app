@@ -3,7 +3,7 @@ FROM --platform=linux/amd64 php:8.4-fpm
 
 WORKDIR /app
 
-# Install system dependencies and PHP extensions
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git unzip curl zip \
     libzip-dev libonig-dev libxml2-dev \
@@ -17,38 +17,31 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy composer files first for better caching
+# Composer install
 COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
-ENV COMPOSER_MEMORY_LIMIT=-1 \
-    COMPOSER_PROCESS_TIMEOUT=600
-
-# Install PHP dependencies
-RUN composer install --no-dev --no-interaction --prefer-dist \
-    --optimize-autoloader --no-scripts
-
-# Copy the rest of the application
+# Copy application code
 COPY . .
 
-# === Laravel Setup for Render ===
+# === Important fixes for Render ===
 RUN cp .env.example .env
 
-# Force APP_KEY from Render Environment Variables into .env file
+# Force the APP_KEY from Render environment variable into the .env file
 RUN echo "APP_KEY=${APP_KEY}" >> .env
 
-# Clear cache and discover packages
+# Generate key (as fallback) + clear config cache
 RUN php artisan key:generate --no-interaction --force || true \
     && php artisan config:clear \
     && php artisan package:discover || true
 
-# Install frontend dependencies and build assets
+# Build frontend assets
 RUN npm ci --no-audit --prefer-offline && npm run build
 
-# Set proper permissions
+# Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 9000
 
-# Run php-fpm
 CMD ["php-fpm"]
