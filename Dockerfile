@@ -14,7 +14,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+RUN cp .env.example .env
+RUN php artisan key:generate
+RUN php artisan config:cache
 
 RUN npm install && npm run build
 
