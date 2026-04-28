@@ -2,26 +2,27 @@ FROM php:8.4-fpm
 
 WORKDIR /app
 
-# ----------------------------
-# System dependencies + PHP extensions
-# ----------------------------
+# =========================
+# System dependencies
+# =========================
 RUN apt-get update && apt-get install -y \
     git unzip curl zip \
     libzip-dev libonig-dev libxml2-dev \
     libcurl4-openssl-dev libssl-dev \
     libpng-dev libjpeg-dev libfreetype6-dev libicu-dev \
+    nodejs npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql mbstring bcmath xml zip gd intl \
     && rm -rf /var/lib/apt/lists/*
 
-# ----------------------------
+# =========================
 # Composer
-# ----------------------------
+# =========================
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# ----------------------------
-# Copy only composer files first (for caching)
-# ----------------------------
+# =========================
+# Copy only composer files first (cache layer)
+# =========================
 COPY composer.json composer.lock ./
 
 RUN composer install \
@@ -31,37 +32,44 @@ RUN composer install \
     --optimize-autoloader \
     --no-scripts
 
-# ----------------------------
-# Copy full application
-# ----------------------------
+# =========================
+# Copy full app
+# =========================
 COPY . .
 
-# ----------------------------
-# IMPORTANT: DO NOT create .env in production
-# Render provides env vars directly
-# ----------------------------
+# =========================
+# Environment setup (safe for builds)
+# =========================
+RUN cp .env.example .env || true
 
-# ----------------------------
-# Fix Laravel bootstrap safely
-# ----------------------------
-RUN php artisan package:discover --ansi || true
+# =========================
+# IMPORTANT: Clear any cached broken config
+# =========================
+RUN php artisan optimize:clear || true
 
-RUN php artisan config:clear || true \
-    && php artisan cache:clear || true \
-    && php artisan route:clear || true
+# =========================
+# Generate app key ONLY if missing (safe fallback)
+# =========================
+RUN php artisan key:generate --force || true
 
-# ----------------------------
-# Permissions
-# ----------------------------
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+# =========================
+# Frontend build (Vite / Inertia)
+# =========================
+RUN npm ci || npm install
+RUN npm run build
 
-# ----------------------------
-# Expose Render port
-# ----------------------------
+# =========================
+# Permissions (critical for Laravel)
+# =========================
+RUN chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+# =========================
+# Expose port (Render uses dynamic PORT)
+# =========================
 EXPOSE 10000
 
-# ----------------------------
-# Start server (Render provides PORT env)
-# ----------------------------
-CMD php -S 0.0.0.0:${PORT:-10000} -t public
+# =========================
+# Start server
+# =========================
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}

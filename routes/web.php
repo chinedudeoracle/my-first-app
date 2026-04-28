@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
+#use Laravel\Fortify\Features;
 use App\Http\Controllers\TaskController;
 
 Route::get('/health', function () {
-    return 'Laravel is working';
+    return 'OK';
 });
 
 Route::inertia('/', 'dashboard');
