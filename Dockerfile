@@ -58,9 +58,12 @@ RUN php artisan config:clear && php artisan route:clear && php artisan view:clea
 # =========================
 # Frontend build (Vite / Inertia)
 # =========================
-RUN npm install
-RUN php artisan wayfinder:generate
-RUN npm run build
+RUN npm install \
+    && php artisan wayfinder:generate \
+    && npm run build \
+    && php artisan config:clear \
+    && php artisan route:clear \
+    && php artisan view:clear
 
 
 # =========================
@@ -77,4 +80,4 @@ EXPOSE 10000
 # =========================
 # Start server
 # =========================
-CMD ["php", "-S", "0.0.0.0:10000", "-t", "public"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
