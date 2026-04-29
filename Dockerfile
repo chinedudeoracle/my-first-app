@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev libonig-dev libxml2-dev \
     libcurl4-openssl-dev libssl-dev \
     libpng-dev libjpeg-dev libfreetype6-dev libicu-dev \
+    libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring bcmath xml zip gd intl \
     && rm -rf /var/lib/apt/lists/*
