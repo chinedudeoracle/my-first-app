@@ -59,6 +59,7 @@ RUN php artisan config:clear && php artisan route:clear && php artisan view:clea
 # Frontend build (Vite / Inertia)
 # =========================
 RUN npm install
+RUN php artisan wayfinder:generate
 RUN npm run build
 RUN php artisan config:cache && \
     php artisan route:cache && \
