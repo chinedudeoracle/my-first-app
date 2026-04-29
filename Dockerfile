@@ -1,43 +1,77 @@
-# syntax = docker/dockerfile:1
-FROM --platform=linux/amd64 php:8.4-fpm
+FROM php:8.4-fpm
 
 WORKDIR /app
 
-# Install dependencies
+# =========================
+# System dependencies
+# =========================
 RUN apt-get update && apt-get install -y \
     git unzip curl zip \
     libzip-dev libonig-dev libxml2-dev \
     libcurl4-openssl-dev libssl-dev \
-    libpng-dev libjpeg-dev libfreetype6-dev libicu-dev libexif-dev \
-    libpq-dev \
-    nodejs npm \
-    && rm -rf /var/lib/apt/lists/* \
+    libpng-dev libjpeg-dev libfreetype6-dev libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mbstring bcmath xml zip gd intl pdo_pgsql pgsql
+    && docker-php-ext-install pdo pdo_mysql mbstring bcmath xml zip gd intl \
+    && rm -rf /var/lib/apt/lists/*
+	
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs
 
+# =========================
 # Composer
+# =========================
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# =========================
+# Copy only composer files first (cache layer)
+# =========================
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
+
+# =========================
+# Copy full app
+# =========================
 COPY . .
 
-# Laravel setup
-RUN cp .env.example .env
-RUN echo "APP_KEY=${APP_KEY}" >> .env
+# =========================
+# Environment setup (safe for builds)
+# =========================
+RUN cp .env.example .env || true
 
-RUN php artisan key:generate --no-interaction --force || true \
-    && php artisan config:clear \
-    && php artisan package:discover || true
+# =========================
+# IMPORTANT: Clear any cached broken config
+# =========================
+RUN php artisan optimize:clear || true
 
-RUN npm ci --no-audit --prefer-offline && npm run build
+# =========================
+# Generate app key ONLY if missing (safe fallback)
+# =========================
+RUN php artisan key:generate --force || true
 
-RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache \
-    && chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+# =========================
+# Frontend build (Vite / Inertia)
+# =========================
+RUN npm install
+RUN npm run build
 
-EXPOSE 9000
+# =========================
+# Permissions (critical for Laravel)
+# =========================
+RUN chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
-# Use php-fpm
-CMD ["php-fpm"]
+# =========================
+# Expose port (Render uses dynamic PORT)
+# =========================
+EXPOSE 10000
+
+# =========================
+# Start server
+# =========================
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
