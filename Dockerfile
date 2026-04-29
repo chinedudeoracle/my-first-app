@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev libssl-dev \
     libpng-dev libjpeg-dev libfreetype6-dev libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mbstring bcmath xml zip gd intl \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring bcmath xml zip gd intl \
     && rm -rf /var/lib/apt/lists/*
 	
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
