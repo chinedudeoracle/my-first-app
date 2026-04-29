@@ -48,7 +48,7 @@ COPY . .
 # =========================
 # IMPORTANT: Clear any cached broken config
 # =========================
-RUN php artisan config:clear && php artisan route:clear && php artisan view:clear || true
+RUN rm -rf bootstrap/cache/*.php
 
 # =========================
 # Generate app key ONLY if missing (safe fallback)
