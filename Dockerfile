@@ -59,7 +59,6 @@ RUN rm -rf bootstrap/cache/*.php
 # Frontend build (Vite / Inertia)
 # =========================
 RUN npm install \
-    && php artisan wayfinder:generate \
     && npm run build
 
 
