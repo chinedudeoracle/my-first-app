@@ -46,6 +46,11 @@ COPY . .
 # RUN cp .env.example .env || true
 
 # =========================
+# Clear Laravel cached config/views (safe build step)
+# =========================
+#RUN php artisan view:clear && php artisan config:clear
+
+# =========================
 # IMPORTANT: Clear any cached broken config
 # =========================
 RUN rm -rf bootstrap/cache/*.php
@@ -58,9 +63,15 @@ RUN rm -rf bootstrap/cache/*.php
 # =========================
 # Frontend build (Vite / Inertia)
 # =========================
-RUN npm install \
-    && npm run build
+COPY package*.json ./
+RUN npm install
 
+COPY . .
+
+RUN php artisan view:clear && php artisan config:clear
+
+RUN rm -rf public/build \
+    && npm run build
 
 # =========================
 # Permissions (critical for Laravel)
