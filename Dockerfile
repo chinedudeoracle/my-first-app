@@ -1,4 +1,4 @@
-FROM php:8.4-fpm
+FROM php:8.4-cli
 
 WORKDIR /app
 
@@ -74,4 +74,4 @@ EXPOSE 10000
 # =========================
 # Start server
 # =========================
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
