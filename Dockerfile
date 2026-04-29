@@ -42,7 +42,7 @@ COPY . .
 # =========================
 # Environment setup (safe for builds)
 # =========================
-RUN cp .env.example .env || true
+# RUN cp .env.example .env || true
 
 # =========================
 # IMPORTANT: Clear any cached broken config
@@ -52,7 +52,7 @@ RUN php artisan optimize:clear || true
 # =========================
 # Generate app key ONLY if missing (safe fallback)
 # =========================
-RUN php artisan key:generate --force || true
+# RUN php artisan key:generate --force || true
 
 # =========================
 # Frontend build (Vite / Inertia)
