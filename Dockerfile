@@ -61,9 +61,10 @@ RUN php artisan config:clear && php artisan route:clear && php artisan view:clea
 RUN npm install
 RUN php artisan wayfinder:generate
 RUN npm run build
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+RUN php artisan optimize:clear
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
 
 # =========================
