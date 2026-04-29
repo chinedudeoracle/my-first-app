@@ -27,15 +27,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (app()->environment('production')) {
-
-            // Force HTTPS URLs everywhere
             URL::forceScheme('https');
-
-            // TRUST Render proxy headers properly
-            Request::setTrustedProxies(
-                '*',
-                Request::HEADER_X_FORWARDED_ALL
-            );
         }
 
         $this->configureDefaults();
