@@ -60,10 +60,7 @@ RUN php artisan config:clear && php artisan route:clear && php artisan view:clea
 # =========================
 RUN npm install \
     && php artisan wayfinder:generate \
-    && npm run build \
-    && php artisan config:clear \
-    && php artisan route:clear \
-    && php artisan view:clear
+    && npm run build
 
 
 # =========================
