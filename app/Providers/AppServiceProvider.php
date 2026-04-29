@@ -27,20 +27,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (app()->environment('production')) {
-
-            // Force HTTPS globally
             URL::forceScheme('https');
-
-            // Ensure Laravel respects Render proxy
-            if (
-                isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
-                $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'
-            ) {
-                URL::forceScheme('https');
-            }
-
-            // IMPORTANT: ensure absolute URLs are generated correctly
-            URL::forceRootUrl(config('app.url'));
         }
 
         $this->configureDefaults();
