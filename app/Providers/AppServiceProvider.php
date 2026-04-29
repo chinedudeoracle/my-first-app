@@ -27,7 +27,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (app()->environment('production')) {
+
             URL::forceScheme('https');
+
+            // TRUST RENDER PROXY
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+                $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                URL::forceScheme('https');
+            }
         }
 
         $this->configureDefaults();
