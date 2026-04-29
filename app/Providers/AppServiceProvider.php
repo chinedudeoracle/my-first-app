@@ -5,8 +5,11 @@ namespace App\Providers;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Http\Request;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +26,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->environment('production')) {
+
+            // Force HTTPS URLs everywhere
+            URL::forceScheme('https');
+
+            // TRUST Render proxy headers properly
+            Request::setTrustedProxies(
+                '*',
+                Request::HEADER_X_FORWARDED_ALL
+            );
+        }
+
         $this->configureDefaults();
     }
 
