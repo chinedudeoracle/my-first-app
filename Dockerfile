@@ -59,6 +59,9 @@ RUN php artisan optimize:clear || true
 # =========================
 RUN npm install
 RUN npm run build
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
 # =========================
 # Permissions (critical for Laravel)
@@ -74,4 +77,4 @@ EXPOSE 10000
 # =========================
 # Start server
 # =========================
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
