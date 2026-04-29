@@ -47,7 +47,7 @@ COPY . .
 # =========================
 # IMPORTANT: Clear any cached broken config
 # =========================
-RUN php artisan optimize:clear || true
+RUN php artisan config:clear && php artisan route:clear && php artisan view:clear || true
 
 # =========================
 # Generate app key ONLY if missing (safe fallback)
