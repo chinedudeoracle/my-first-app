@@ -85,7 +85,7 @@ export default function Profile({
                                         <p className="-mt-4 text-sm text-muted-foreground">
                                             Your email address is unverified.{' '}
                                             <Link
-                                                href={send()}
+                                                href={send().url}
                                                 as="button"
                                                 className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                             >
@@ -126,7 +126,7 @@ Profile.layout = {
     breadcrumbs: [
         {
             title: 'Profile settings',
-            href: edit(),
+            href: edit().url,
         },
     ],
 };

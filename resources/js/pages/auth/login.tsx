@@ -54,7 +54,7 @@ export default function Login({
                                     <Label htmlFor="password">Password</Label>
                                     {canResetPassword && (
                                         <TextLink
-                                            href={request()}
+                                            href={request().url}
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
@@ -97,7 +97,7 @@ export default function Login({
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
                                 Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
+                                <TextLink href={register().url} tabIndex={5}>
                                     Sign up
                                 </TextLink>
                             </div>

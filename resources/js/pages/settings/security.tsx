@@ -243,7 +243,7 @@ Security.layout = {
     breadcrumbs: [
         {
             title: 'Security settings',
-            href: edit(),
+            href: edit().url,
         },
     ],
 };
