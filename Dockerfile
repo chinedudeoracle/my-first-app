@@ -72,6 +72,7 @@ RUN npm install
 COPY . .
 
 # 3. Build frontend
+RUN rm -rf public/build
 RUN npm run build
 
 # =========================
