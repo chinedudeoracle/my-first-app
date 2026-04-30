@@ -5,26 +5,27 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
+
 import { edit as editAppearance } from "@/routes/appearance/index";
 import { edit } from '@/routes/profile/index';
 import { edit as editSecurity } from "@/routes/security/index";
-import { home } from "@/routes/index";
+
 import type { NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
-        href: edit(),
+        href: edit().url,
         icon: null,
     },
     {
         title: 'Security',
-        href: editSecurity(),
+        href: editSecurity().url,
         icon: null,
     },
     {
         title: 'Appearance',
-        href: editAppearance(),
+        href: editAppearance().url,
         icon: null,
     },
 ];
