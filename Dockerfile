@@ -63,15 +63,16 @@ RUN rm -rf bootstrap/cache/*.php
 # =========================
 # Frontend build (Vite / Inertia)
 # =========================
+# 1. Copy package files FIRST (for caching)
 COPY package*.json ./
+
 RUN npm install
 
+# 2. Copy rest of app
 COPY . .
 
-RUN php artisan view:clear && php artisan config:clear
-
-RUN rm -rf public/build \
-    && npm run build
+# 3. Build frontend
+RUN npm run build
 
 # =========================
 # Permissions (critical for Laravel)

@@ -6,8 +6,9 @@ import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from "@/routes/appearance/index";
-import { edit } from '@/routes/profile';
-import { edit as editSecurity } from "@/routes/security";
+import { edit } from '@/routes/profile/index';
+import { edit as editSecurity } from "@/routes/security/index";
+import { home } from "@/routes/index";
 import type { NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
