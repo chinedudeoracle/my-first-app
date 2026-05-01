@@ -15,8 +15,18 @@ Route::get('/', function () {
     return redirect('/tasks');
 })->name('home');
 
+/*
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
+
+    Route::resource('tasks', TaskController::class);
+});
+*/
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return redirect('/tasks');
+    })->name('dashboard');
 
     Route::resource('tasks', TaskController::class);
 });
