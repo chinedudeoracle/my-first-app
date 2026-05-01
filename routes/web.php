@@ -6,9 +6,13 @@ use App\Http\Controllers\TaskController;
 Route::get('/health', function () {
     return 'OK';
 });
-
+/*
 Route::get('/', function () {
     return inertia('dashboard');
+})->name('home');
+*/
+Route::get('/', function () {
+    return redirect('/tasks');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
